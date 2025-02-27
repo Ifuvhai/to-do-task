@@ -1,38 +1,80 @@
 import { useEffect, useState } from "react";
+import Modal from "react-modal";
+
+Modal.setAppElement("#root");
 
 const Home = () => {
+    const [tasks, setAllTasks] = useState([]);
+    const [editingTask, setEditingTask] = useState(null); // Stores the task being edited
+    const [updatedData, setUpdatedData] = useState({ title: "", description: "", dueDate: "", priority: "" });
 
-    const [tasks, setAllTasks] = useState([])
-
-    const fetchTasks = async() =>{
+    const fetchTasks = async () => {
         const res = await fetch("http://localhost:3000/tasks");
-            const data = await res.json();
-            setAllTasks(data);
-    }
+        const data = await res.json();
+        setAllTasks(data);
+    };
 
     useEffect(() => {
-        fetchTasks()
-    }, [])
+        fetchTasks();
+    }, []);
 
-    const handleDelete = (id) => {
-        fetch(`http://localhost:3000/tasks/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Task deleted successfully:", data);
-            fetchTasks()
-            // Optionally, update UI or state after deletion
-        })
-        .catch(error => console.error("Error deleting task:", error));
-
-
+    const handleDelete = async (id) => {
+        try {
+            await fetch(`http://localhost:3000/tasks/${id}`, { method: "DELETE" });
+            fetchTasks(); // Refresh UI after delete
+        } catch (error) {
+            console.error("Error deleting task:", error);
+        }
     };
-    
-// console.log(tasks);
+
+    const handleToggleStatus = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:3000/tasks/${id}/status`, { method: "PATCH" });
+            const data = await response.json();
+            console.log("Task status updated:", data);
+            fetchTasks();
+        } catch (error) {
+            console.error("Error updating task:", error);
+        }
+    };
+
+    const handleEdit = (task) => {
+        setEditingTask(task._id);
+        setUpdatedData({
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            priority: task.priority,
+        });
+    };
+
+    const handleUpdateChange = (e) => {
+        const { name, value } = e.target;
+        setUpdatedData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleUpdateSubmit = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log("Task updated successfully:", data);
+                setEditingTask(null); // Hide the edit form
+                fetchTasks(); // Refresh the task list
+            } else {
+                console.error("Update failed:", data.error);
+            }
+        } catch (error) {
+            console.error("Error updating task:", error);
+        }
+    };
 
     return (
         <>
@@ -44,9 +86,11 @@ const Home = () => {
                 <h2>To-Do-Tasks: {tasks.length}</h2>
 
                 {/* Task List */}
-                {tasks.length === 0 ? <p className="text-center">No tasks yet.</p> : (
+                {tasks.length === 0 ? (
+                    <p className="text-center">No tasks yet.</p>
+                ) : (
                     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {tasks.map(task => (
+                        {tasks.map((task) => (
                             <li key={task._id} className="bg-white p-4 mb-2 shadow rounded">
                                 <h3 className="font-bold">{task.title}</h3>
                                 <p>{task.description}</p>
@@ -55,11 +99,78 @@ const Home = () => {
                                     {task.status}
                                 </p>
                                 <div className="mt-2 flex gap-2">
-                                    <button className="bg-green-500 text-white px-3 py-1 rounded">
+                                    <button
+                                        onClick={() => handleToggleStatus(task._id)}
+                                        className={`px-3 py-1 rounded text-white ${task.status === "Completed" ? "bg-yellow-500" : "bg-green-500"
+                                            }`}
+                                    >
                                         {task.status === "Pending" ? "Mark Complete" : "Mark Pending"}
                                     </button>
-                                    <button onClick={()=>handleDelete(task._id)} className="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
+                                    <button
+                                        onClick={() => handleEdit(task)}
+                                        className="bg-blue-500 text-white px-3 py-1 rounded"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(task._id)}
+                                        className="bg-red-500 text-white px-3 py-1 rounded"
+                                    >
+                                        Delete
+                                    </button>
                                 </div>
+
+                                {/* Edit Task Modal */}
+                                <Modal
+                                    isOpen={!!editingTask}
+                                    onRequestClose={() => setEditingTask(null)}
+                                    className="bg-white p-6 rounded shadow-lg max-w-lg mx-auto mt-20"
+                                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+                                >
+                                    <h3 className="font-bold text-lg mb-4">Edit Task</h3>
+                                    <input
+                                        type="text"
+                                        name="title"
+                                        value={updatedData.title}
+                                        onChange={handleUpdateChange}
+                                        className="w-full p-2 mb-2 border rounded"
+                                    />
+                                    <textarea
+                                        name="description"
+                                        value={updatedData.description}
+                                        onChange={handleUpdateChange}
+                                        className="w-full p-2 mb-2 border rounded"
+                                    ></textarea>
+                                    <input
+                                        type="date"
+                                        name="dueDate"
+                                        value={updatedData.dueDate}
+                                        onChange={handleUpdateChange}
+                                        className="w-full p-2 mb-2 border rounded"
+                                    />
+                                    <select
+                                        name="priority"
+                                        value={updatedData.priority}
+                                        onChange={handleUpdateChange}
+                                        className="w-full p-2 mb-2 border rounded"
+                                    >
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                    </select>
+                                    <div className="flex gap-2">
+                                        <button onClick={() => handleUpdateSubmit(editingTask)} className="bg-green-500 text-white px-3 py-1 rounded">
+                                            Save
+                                        </button>
+
+                                        <button
+                                            onClick={() => setEditingTask(null)}
+                                            className="bg-gray-500 text-white px-3 py-1 rounded"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </Modal>
                             </li>
                         ))}
                     </ul>
