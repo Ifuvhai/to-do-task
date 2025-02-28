@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
 
 const Login = () => {
+  const {handleLogIn} = useContext(AuthContext)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -14,20 +15,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    // Register user with Firebase/AuthProvider
+    const userCredential = await handleLogIn(formData.email, formData.password);
+    const user = userCredential.user;
+    console.log(user);
 
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      console.log("Login Success:", data);
-    } catch (error) {
-      console.error("Login Error:", error);
-    } finally {
-      setLoading(false);
-    }
+    // try {
+    //   const response = await fetch("/api/login", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(formData),
+    //   });
+    //   const data = await response.json();
+    //   console.log("Login Success:", data);
+    // } catch (error) {
+    //   console.error("Login Error:", error);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (

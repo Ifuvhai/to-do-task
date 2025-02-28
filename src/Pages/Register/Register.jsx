@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
 
 const Register = () => {
+  const { handleRegister } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,21 +18,37 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
+    setError("");
+  
     try {
-      const response = await fetch("/api/register", {
+      // Register user with Firebase
+      const userCredential = await handleRegister(formData.email, formData.password);
+      const user = userCredential.user;
+  
+      // Send user details to backend
+      const response = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password, // ✅ Add this
+        }),
       });
-      const data = await response.json();
-      console.log("Registration Successful:", data);
+      
+      
+  
+      if (!response.ok) throw new Error("Failed to save user data");
+  
+      console.log("User registered successfully:", await response.json());
     } catch (error) {
+      setError(error.message);
       console.error("Registration Error:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -38,11 +57,11 @@ const Register = () => {
           Create an Account
         </h2>
 
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Full Name
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Full Name</label>
             <input
               type="text"
               name="name"
@@ -55,9 +74,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Email Address
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Email Address</label>
             <input
               type="email"
               name="email"
@@ -70,9 +87,7 @@ const Register = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Password
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Password</label>
             <input
               type="password"
               name="password"
@@ -95,9 +110,7 @@ const Register = () => {
 
         <p className="text-center text-gray-600 mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-500 font-medium hover:underline">
-            Login
-          </a>
+          <a href="/login" className="text-blue-500 font-medium hover:underline">Login</a>
         </p>
       </div>
     </div>

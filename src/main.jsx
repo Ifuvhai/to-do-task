@@ -11,6 +11,7 @@ import Login from './Pages/Login/Login';
 import TodoList from './Pages/TodoList/TodoList';
 import AuthProvider from './Provider/AuthProvider';
 import Register from './Pages/Register/Register';
+import VerifyEmail from './Pages/VerifyEmail/VerifyEmail';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <Register></Register>
+      },
+      {
+        path: "/verify",
+        element: <VerifyEmail></VerifyEmail>
       },
       {
         path: "/todos",
