@@ -10,6 +10,7 @@ import Home from './MainLayout/Home/Home';
 import Login from './Pages/Login/Login';
 import TodoList from './Pages/TodoList/TodoList';
 import AuthProvider from './Provider/AuthProvider';
+import Register from './Pages/Register/Register';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <Login></Login>
+      },
+      {
+        path: "/register",
+        element: <Register></Register>
       },
       {
         path: "/todos",
