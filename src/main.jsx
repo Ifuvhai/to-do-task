@@ -12,6 +12,7 @@ import TodoList from './Pages/TodoList/TodoList';
 import AuthProvider from './Provider/AuthProvider';
 import Register from './Pages/Register/Register';
 import VerifyEmail from './Pages/VerifyEmail/VerifyEmail';
+import Settings from './Pages/Settings/Settings';
 
 const router = createBrowserRouter([
   {
@@ -31,12 +32,16 @@ const router = createBrowserRouter([
         element: <Register></Register>
       },
       {
-        path: "/verify",
+        path: "/verify-otp",
         element: <VerifyEmail></VerifyEmail>
       },
       {
         path: "/todos",
         element: <TodoList></TodoList>
+      },
+      {
+        path: "/settings",
+        element: <Settings></Settings>
       }
     ]
   },
