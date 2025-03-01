@@ -1,19 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 const VerifyOtp = () => {
     const [otp, setOtp] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    // Get email from localStorage
     const email = localStorage.getItem("email");
 
     useEffect(() => {
         if (!email) {
-            navigate("/login"); // Redirect if email is missing
+            navigate("/login");
         }
     }, [email, navigate]);
 
@@ -31,21 +29,19 @@ const VerifyOtp = () => {
         try {
             const response = await axios.post("http://localhost:3000/verify-otp", {
                 email,
-                code: Number(otp), // Convert OTP to a number safely
+                code: Number(otp), 
             });
-
-            console.log("✅ OTP Verification Response:", response.data);
 
             if (response.data.message.includes("OTP verified")) {
                 alert("✅ OTP Verified!");
-                navigate("/"); // Redirect to Google Authenticator input
+                navigate("/");
             }
         } catch (err) {
             const errorMessage = err.response?.data?.error || "Something went wrong. Try again.";
             setError(errorMessage);
 
             if (errorMessage.toLowerCase().includes("expired") || errorMessage.toLowerCase().includes("not found")) {
-                localStorage.removeItem("email"); // Remove only if OTP fails
+                localStorage.removeItem("email"); 
                 setTimeout(() => navigate("/login"), 2000);
             }
         } finally {

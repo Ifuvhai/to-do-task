@@ -8,13 +8,14 @@ const Navbar = () => {
 
   const handleLogout = () => {
     handleSignOut();
-    navigate("/login"); // Redirect to login after logout
+    navigate("/login"); 
   };
 
   return (
     <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
       <NavLink to="/" className="text-xl font-bold">To-Do App</NavLink>
       <div>
+        <NavLink to="/" className="mx-2" activeClassName="underline">Dashboard</NavLink>
         <NavLink to="/todos" className="mx-2" activeClassName="underline">Tasks</NavLink>
         <NavLink to="/settings" className="mx-2" activeClassName="underline">Settings</NavLink>
         {user ? (

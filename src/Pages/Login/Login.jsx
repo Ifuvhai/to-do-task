@@ -19,7 +19,6 @@ const Login = () => {
     setError("");
 
     try {
-      // Login user with Firebase
       const userCredential = await handleLogIn(formData.email, formData.password);
       const user = userCredential.user;
       console.log(user);
@@ -32,11 +31,7 @@ const Login = () => {
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Login failed");
-
-      // Save email in localStorage for OTP verification
       localStorage.setItem("email", formData.email);
-
-      // Redirect to OTP verification page
       navigate("/verify-otp");
     } catch (error) {
       setError(error.message);

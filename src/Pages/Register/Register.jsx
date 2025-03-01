@@ -21,23 +21,20 @@ const Register = () => {
     setError("");
   
     try {
-      // Register user with Firebase
       const userCredential = await handleRegister(formData.email, formData.password);
       const user = userCredential.user;
   
-      // Send user details to backend
       const response = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          password: formData.password, // ✅ Add this
+          password: formData.password, 
         }),
       });
       
       
-  
       if (!response.ok) throw new Error("Failed to save user data");
   
       console.log("User registered successfully:", await response.json());

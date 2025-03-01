@@ -13,6 +13,7 @@ import AuthProvider from './Provider/AuthProvider';
 import Register from './Pages/Register/Register';
 import VerifyEmail from './Pages/VerifyEmail/VerifyEmail';
 import Settings from './Pages/Settings/Settings';
+import PrivateRoute from './MainLayout/PrivateRoute/PrivateRoute';
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home></Home>
+        element: <PrivateRoute><Home></Home></PrivateRoute>
       },
       {
         path: "/login",
@@ -37,11 +38,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/todos",
-        element: <TodoList></TodoList>
+        element: <PrivateRoute><TodoList></TodoList></PrivateRoute>
       },
       {
         path: "/settings",
-        element: <Settings></Settings>
+        element: <PrivateRoute><Settings></Settings></PrivateRoute>
       }
     ]
   },

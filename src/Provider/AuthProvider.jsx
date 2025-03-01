@@ -8,6 +8,7 @@ const provider = new GoogleAuthProvider();
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState([null])
     const [loading, setLoading] = useState(true)
+    const [verify, setVerify] = useState("")
 
     // google login 
     const handleGoogleSignIn = () => {
@@ -34,26 +35,10 @@ const AuthProvider = ({ children }) => {
         return signOut(auth);
     }
 
-    // update profile
-    // const updateUserProfile = (name, photoURL) => {
-    //     return updateProfile(auth.currentUser, {
-    //       displayName: name,
-    //       photoURL: photoURL,
-    //     });
-    //   };
-
-
 
     useEffect(() => {
         const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-            // if(currentUser?.email){
-            //     const user = {email: currentUser.email};
-
-            //     axios.post('https://online-group-study-server-zeta.vercel.app/jwt', user)
-            //     .then(res => console.log(res.data))
-
-            // }
             setLoading(false);
         });
         return () => {
@@ -69,7 +54,8 @@ const AuthProvider = ({ children }) => {
         handleRegister,
         handleLogIn,
         loading,
-        // updateUserProfile
+        setVerify,
+        verify
     }
     return (
         <AuthContext.Provider value={authInfo}>

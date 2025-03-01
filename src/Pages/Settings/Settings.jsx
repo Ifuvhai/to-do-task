@@ -21,7 +21,6 @@ const Settings = () => {
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
       <h2 className="text-2xl font-bold mb-4 text-center">Settings</h2>
 
-      {/* User Profile Section */}
       {user ? (
         <div className="mb-6 p-4 border rounded-lg text-center">
           <h3 className="text-xl font-semibold">Profile</h3>
@@ -37,7 +36,6 @@ const Settings = () => {
         <p className="text-red-500 text-center">You are not logged in.</p>
       )}
 
-      {/* Google Account Connection */}
       <div className="mb-6 p-4 border rounded-lg text-center">
         <h3 className="text-xl font-semibold">Google Account</h3>
         <button
@@ -50,7 +48,6 @@ const Settings = () => {
         </button>
       </div>
 
-      {/* Google Calendar Sync Toggle */}
       <div className="flex items-center justify-between p-4 border rounded-lg">
         <h3 className="text-xl font-semibold">Google Calendar Sync</h3>
         <label className="relative inline-flex items-center cursor-pointer">
